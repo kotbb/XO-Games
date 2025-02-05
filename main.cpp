@@ -11,6 +11,7 @@
 
 using namespace std;
 
+// choice for every game to create their player
 void pyramid_Choice(string &p1name,string &p2name,Player <char> *(&players)[2],string &ch1,string &ch2);  // 1
 void C4_Choice(string &p1name,string &p2name,Player <char> *(&players)[2],string &ch1,string &ch2);       // 2
 void Tic_5x5(string &p1name,string &p2name,Player <char> *(&players)[2],string &ch1,string &ch2);         // 3
@@ -19,7 +20,7 @@ void numeric_Choice(string &p1name,string &p2name,Player <int> *(&players)[2],st
 void Misere_Choice(string &p1name,string &p2name,Player <char> *(&players)[2],string &ch1,string &ch2);   // 6
 void X_O_4x4_Choice(string &p1name,string &p2name,Player <char> *(&players)[2],string &ch1,string &ch2);  // 7
 void ultimate_Choice(string &p1name,string &p2name,Player <char> *(&players)[2],string &ch1,string &ch2); // 8
-void Sus_Choice(string &p1name,string &p2name,Player <char> *(&players)[2],string &ch1,string &ch2); // 8
+void Sus_Choice(string &p1name,string &p2name,Player <char> *(&players)[2],string &ch1,string &ch2); // 9
 
 void mainMenu() {
     cout << string(30,'*')  << "  Main Menu  " << string(30,'*') << endl;
@@ -67,7 +68,6 @@ int main() {
         }
         else if (choice == "2") {
             C4_board<char> *board = new C4_board<char>;
-            board->generate_positions();
             C4_Choice(p1name, p2name, players_Ch,ch1,ch2);
             GameManager<char> gameManager(board, players_Ch);
             gameManager.run();
@@ -77,7 +77,7 @@ int main() {
             }
         }
         else if (choice == "3") {
-            X_O_5x5_Board<char> *board = new X_O_5x5_Board<char>;
+            TicTacToe5x5Board<char> *board = new TicTacToe5x5Board<char>;
             Tic_5x5(p1name, p2name, players_Ch,ch1,ch2);
             GameManager<char> gameManager(board, players_Ch);
             gameManager.run();
@@ -190,8 +190,7 @@ void user_Inputs(string &p1name,string &p2name,string &ch1,string &ch2,string ch
         break;
     }
     if(choice != "9" && choice != "5" && choice != "4")
-        cout << "Player 1 plays with (X) and Player 2 plays with (O).\n" << endl;
-
+        cout << "Player 1 plays with (X) and Player 2 plays with (O).\n";
 }
 void pyramid_Choice(string &p1name,string &p2name,Player <char> *(&players)[2],string &ch1,string &ch2)
 {
@@ -222,7 +221,7 @@ void numeric_Choice(string &p1name,string &p2name,Player <int> *(&players)[2],st
 
     else if(ch2 == "2")
         players[1] = new numeric_Random_Player <int>(4);
-    cout << "Player 1 plays with odd numbers and Player 2 plays with even numbers.\n"<< endl;
+    cout << "Player 1 plays with odd numbers and Player 2 plays with even numbers.\n";
 
 
 }
@@ -272,15 +271,15 @@ void Tic_5x5(string &p1name,string &p2name,Player <char> *(&players)[2],string &
 {
 
     if(ch1 == "1")
-        players[0] = new X_O_5x5_Player<char>(p1name, 'X');
+        players[0] = new TicTacToe5x5Player<char>(p1name, 'X');
     else if(ch1 == "2")
-        players[0] = new X_O_5x5_Random_Player<char>('X');
+        players[0] = new TicTacToe5x5Player_random<char>('X');
 
     if(ch2 == "1")
-        players[1] = new X_O_5x5_Player<char>(p2name, 'O');
+        players[1] = new TicTacToe5x5Player<char>(p2name, 'O');
 
     else if(ch2 == "2")
-        players[1] = new X_O_5x5_Random_Player<char>('O');
+        players[1] = new TicTacToe5x5Player_random<char>('O');
 }
 void X_O_4x4_Choice(string &p1name,string &p2name,Player <char> *(&players)[2],string &ch1,string &ch2)
 {
@@ -321,6 +320,6 @@ void Sus_Choice(string &p1name,string &p2name,Player <char> *(&players)[2],strin
 
     else if(ch2 == "2")
         players[1] = new Sus_Random_Player<char>('U');
-    cout << "Player 1 plays with (S) and Player 2 plays with (U).\n" << endl;
+    cout << "Player 1 plays with (S) and Player 2 plays with (U).\n";
 
 }

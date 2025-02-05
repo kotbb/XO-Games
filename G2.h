@@ -18,15 +18,15 @@ template <typename T>
 class C4_board : public Board<T>{
 
 public:
-    static vector <pair<int,int>> positions;
+    static vector <vector<bool>> positions;
     C4_board();
     bool update_board(int x, int y, T symbol);
     void display_board() ;
     bool is_win() ;
     bool is_draw() ;
     bool game_is_over() ;
-    void generate_positions();
-    bool check_move(int x, int y, vector<pair<int,int>> &vec);
+
+    int check_move(int y, vector<vector<bool>> &vec);
 
 };
 //-------------------------------------------- C4 Player
@@ -72,8 +72,8 @@ template <typename T>
 void C4_player <T>:: getmove(int &x, int &y)
 {
     while (true){
-        cout << "Please Enter the place you want to play. Two numbers with space like (0 1)\n";
-        cin >> x >> y;
+        cout << "Please Enter the column you want to play, only the numbers of the column\n";
+        cin >> y;
         if (cin.fail()) {
             cout << "Invalid input. Please enter numeric values." << endl;
             cin.clear();
@@ -86,18 +86,8 @@ void C4_player <T>:: getmove(int &x, int &y)
 }
 //-----------------------------------------------Board
 template <typename T>
-vector <pair<int,int>> C4_board<T>::positions;
+vector <vector<bool>> C4_board<T>::positions(6,vector<bool>(7,false));
 
-// generate all the positions that the user can play
-template <typename T>
-void C4_board<T>::generate_positions()
-{
-    for (int i = 0; i < 6; ++i) {
-        for (int j = 0; j < 7 ; ++j) {
-            positions.emplace_back(i,j);
-        }
-    }
-}
 template <typename T>
 C4_board<T>::C4_board()
 {
@@ -114,7 +104,7 @@ C4_board<T>::C4_board()
         }
     }
     this->n_moves = 0;
-
+    positions = vector<vector<bool>>(6, vector<bool>(7, false));
 }
 
 template <typename T>
@@ -201,22 +191,17 @@ bool C4_board <T> :: game_is_over()
     return false;
 }
 
-// to check if the bottom column in the board is filled or not to check the validation of the move
+// to check if the column in the board is filled
 template <typename T>
-bool C4_board <T> ::check_move(int x, int y, vector<pair<int, int>> &vec) {
-    for (int i = 0; i < vec.size(); i++) {
-        if(y == vec[i].second)
+int C4_board <T> ::check_move(int y, vector<vector<bool>> &vec) {
+    for (int i = 5; i >=0 ; i--) {
+        if(!vec[i][y])
         {
-            if(x == vec[i].first)
-            {
-                vec.erase(vec.begin()+i);
-                i--;
-            }
-            if(x < vec[i].first)
-                return false;
+            vec[i][y] = true;
+            return i;
         }
     }
-    return true;
+    return -1;
 }
 
 template <typename T>
@@ -225,39 +210,47 @@ bool C4_board<T> :: update_board(int x,int y, T symbol)
     bool is_random = false;
     if((symbol == 'x' || symbol == 'o'))
         is_random = true;
-
-    if(!check_move(x,y,positions))
+    if(y > 6)
     {
-        if(!is_random)
-            cout << "You can't play here, you have to fill the bottom one in the column first.\n";
+        cout << "Invalid input, choose column between (0 6)";
         return false;
     }
-    if(!(x < 0 || x >= this->rows || y < 0 || y >= this->columns) && (this->board[x][y] == 0))
+    x = check_move(y,positions);
+    if(x == -1)
+    {
+        if(!is_random)
+            cout << "You can't play here, the column is completely filled.\n";
+        return false;
+    }
+    else
     {
         ++this->n_moves;
         this->board[x][y] = toupper(symbol);
         return true;
     }
-    if(!is_random)
-        cout << "Invalid choice...\n";
-    return false;
 }
 
 template <typename T>
 void C4_board<T>::display_board()
 {
+
     for (int i = 0; i < this->rows; i++)
     {
         for (int j = 0; j < this->columns; j++)
         {
             cout << setw(2);
             if(this->board[i][j] == 0)
-                cout << " | " << i << "," << j;
+                cout << " |  ";
             else
-                cout << " |  " << char(toupper(this->board[i][j])) << " ";
+                cout << " | " << char(toupper(this->board[i][j]));
+            if(j == 6)
+                cout << " | ";
         }
         cout << endl;
-        cout << string(42,'-') << endl;
+        cout << string(30,'-') << endl;
+    }
+    for (int i = 0; i < 7 ; ++i) {
+        cout << setw(4) << i;
     }
     cout << endl;
 }
@@ -274,7 +267,6 @@ C4_Random_Player<T>::C4_Random_Player(T symbol) : RandomPlayer<T>(symbol) {
 
 template <typename T>
 void C4_Random_Player<T>::getmove(int& x, int& y) {
-    x = rand() % (this->dimension - 1);  // random(0,5)
     y = rand() % this->dimension;      // random(0,6)
 }
 #endif
